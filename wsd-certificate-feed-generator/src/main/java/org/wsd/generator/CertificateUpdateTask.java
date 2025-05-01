@@ -1,5 +1,7 @@
 package org.wsd.generator;
 
+import org.wsd.util.Logger;
+
 import java.time.LocalDate;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,6 +20,7 @@ public class CertificateUpdateTask implements Callable<CertificateUpdate> {
 
         long timestamp = System.currentTimeMillis();
         String isin = IsinGenerator.generateISIN();
+        Logger.log("Generated ISIN: " + isin);
 
         double bidPrice = roundToDecimal(random.nextDouble(100.00, 200.01));
 
