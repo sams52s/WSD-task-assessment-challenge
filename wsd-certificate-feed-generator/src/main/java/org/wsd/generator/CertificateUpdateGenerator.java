@@ -1,8 +1,13 @@
 package org.wsd.generator;
 
+import org.wsd.util.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class CertificateUpdateGenerator {
@@ -15,12 +20,32 @@ public class CertificateUpdateGenerator {
     }
 
     public Stream<CertificateUpdate> generateQuotes() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        // TODO: Implement it later.
-        List<CertificateUpdate> updateList = new ArrayList<CertificateUpdate>();
-        for (int i = 0; i < threads * quotes; i++) {
-            updateList.add(new CertificateUpdate());
+        Logger.log("Initializing thread pool with " + threads + " threads.");
+
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        List<Future<CertificateUpdate>> futures = new ArrayList<>();
+        IsinGenerator isinGenerator = new IsinGenerator();
+
+        Logger.log("Submitting " + quotes + " tasks to executor.");
+
+        for (int i = 0; i < quotes; i++) {
+            futures.add(executor.submit(new CertificateUpdateTask(isinGenerator)));
         }
-        return Stream.generate(CertificateUpdate::new).parallel().limit(quotes);
+
+        List<CertificateUpdate> updates = new ArrayList<>();
+
+        for (Future<CertificateUpdate> future : futures) {
+            try {
+                updates.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                Logger.error("Error while executing task", e);
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+        Logger.log("All tasks completed. Returning result stream.");
+
+        return updates.stream();
     }
 }
