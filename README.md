@@ -33,9 +33,9 @@ This project is a submission for the **Java Developer Task Assessment Challenge*
 - Custom `Logger` class for lightweight timestamped logging
 
 
-Thank you to the WallStreetDocs team for this opportunity to showcase my Java skills.
-Please feel free to review the commit history for step-by-step progress.
-
-Author: A.B.M. Toufiqul Alam (Sams)
-**LinkedIn:** [toufiqul-alam-sams](www.linkedin.com/in/toufiqul-alam-sams-8a771518a)
-**Email:** toufiqul.sams@gmail.com / sams52tas@gmail.com
+> Thank you to the WallStreetDocs team for this opportunity to showcase my Java skills.
+> Please feel free to review the commit history for step-by-step progress.
+---
+## Author: A.B.M. Toufiqul Alam (Sams)
+- **LinkedIn:** [toufiqul-alam-sams](www.linkedin.com/in/toufiqul-alam-sams-8a771518a)
+- **Email:** toufiqul.sams@gmail.com / sams52tas@gmail.com
