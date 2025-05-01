@@ -2,7 +2,10 @@ package org.wsd.generator;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class CertificateUpdateGenerator {
@@ -15,12 +18,26 @@ public class CertificateUpdateGenerator {
     }
 
     public Stream<CertificateUpdate> generateQuotes() {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        // TODO: Implement it later.
-        List<CertificateUpdate> updateList = new ArrayList<CertificateUpdate>();
-        for (int i = 0; i < threads * quotes; i++) {
-            updateList.add(new CertificateUpdate());
+        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        List<Future<CertificateUpdate>> futures = new ArrayList<>();
+        IsinGenerator isinGenerator = new IsinGenerator();
+
+        for (int i = 0; i < quotes; i++) {
+            futures.add(executor.submit(new CertificateUpdateTask(isinGenerator)));
         }
-        return Stream.generate(CertificateUpdate::new).parallel().limit(quotes);
+
+        List<CertificateUpdate> updates = new ArrayList<>();
+
+        for (Future<CertificateUpdate> future : futures) {
+            try {
+                updates.add(future.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        executor.shutdown();
+
+        return updates.stream();
     }
 }
